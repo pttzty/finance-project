@@ -1,0 +1,114 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}            % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                                  % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                           % Activate for rotated page geometry
+%\usepackage[parfill]{parskip}                  % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}                           % Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+                                                                % TeX will automatically convert eps --> pdf in pdflatex                
+\usepackage{amssymb}
+\usepackage{upquote}
+
+%-----------------------------------------------------------------------------
+% Special-purpose color definitions (dark enough to print OK in black and white)
+\usepackage{color}
+% A few colors to replace the defaults for certain link types
+\definecolor{orange}{cmyk}{0,0.4,0.8,0.2}
+\definecolor{darkorange}{rgb}{.71,0.21,0.01}
+\definecolor{darkgreen}{rgb}{.12,.54,.11}
+%-----------------------------------------------------------------------------
+% The hyperref package gives us a pdf with properly built
+% internal navigation ('pdf bookmarks' for the table of contents,
+% internal cross-reference links, web links for URLs, etc.)
+\usepackage{hyperref}
+\hypersetup{pdftex, % needed for pdflatex
+  breaklinks=true, % so long urls are correctly broken across lines
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=darkorange,
+  citecolor=darkgreen,
+}
+
+
+\title{Finance Project\\
+  Stat 222, Spring 2016}
+
+\author{
+  Siyao Chang, Mengfei Jiang, Tianyi Zhang\\
+  \texttt{your github account}
+}
+
+
+\begin{document}
+\maketitle
+
+\abstract{This paper studies the performance of a variety of machine learning techniques in classifying the mid-price changes and price spread crossings from the high-frequency limit order book of Apple Inc (AAPL) on a trading day. The idea of feature selection and model building originates from the 2014 paper by Kercheval and Zhang~\cite{financesvm}. In addition to the ordinary data processing, model fitting and assessment, this paper also interprets the fitted model, and tries to implement the trading strategies in the model to compute the ideal profit.}
+
+
+\section{Introduction}
+The modern computing systems enables the high-frequency trading in stock markets. From Kercheval and Zhang's paper in 2014~\cite{financesvm}, high frequency trading accounted for 84\% total stock trades, and thus utilizing data from limit order book becomes crucial to capture the dynamics of stock markets. The purpose of this paper is to build classification models to help the buy/sell decision for the AAPL stock from the limit order book containing different levels of bid and ask prices information.\\
+From Kercheval and Zhang in 2014~\cite{financesvm}, the features are grouped in the basic set, the time-insensitive set, and the time-sensitive set. We built up the classification models based on the subset of these 3 sets. The basic set contains the 10 levels of bid and ask prices and volumes. The time-insensitive set contains the mid-prices and bid-ask spreads, price differences, mean prices and volumes, accumulated differences for 10 different levels. Considering the computational complexity, we only use the price and volume derivatives from the time-sensitive set. The reponse variables we have considered in this paper are a factor variable of mid-price changes and another factor variable of spread-crossings. Each of the response variable could fall in three classes: upward(U), downward(D), stationary(S).\\
+The paper first clarifies the data preprocessing, then addresses the model fitting and assessment. After finalizing the models, a section followed will talk about how to interpret models and how models matches common financial knowledge. Finally, there will be a section talking about the implementation of the trading strategies from the model, where profit will be computed.
+\section{Data Preprocessing}
+The data we used is obtained from the limit order book of the SPY index. The specific stock we are interested in is the APPLE stock. Our data include the prices and volumes of AAPL from 9:30AM to 12:28PM on May 22, 2012 for 10 levels of bid and ask for each time-stamped event. \\
+Since we are trying to predict whether the stock price has an upward, stationary or downward trend, we need to create these labels first. We created the labels in two ways: 1) using the mid-price movement and 2) using the bid-ask spread crossing. \\
+The mid-price is the mean of the best ask price and best bid price, in our case, the level 1 ask and bid price. It is calculated as $P_t^{mid} = \frac{1}{2}(P_t^{ask} + P_t^{bid})$. We compare the mid-price of the current time point to the mid-price at some later timestamp. If the later mid-price is larger than the current mid-price, then the stock has an upward trend. Similarly, we get a downward trend if the later mid-price is smaller than the current mid-price and stationary trend if mid-prices at the two timestamps are equal. We use these three possible outcomes of mid-price movements (upward, stationary and downward) as our class labels. \\
+Bid-ask spread crossing is a more common way in real market when determining trends. We can also determine the three types of trends with spread crossing. There is an upward price spread crossing when the best bid price at a certain later timestamp exceeds the best ask price at the current timestamp ($P_{t+\Delta t}^{bid} > P_t^{ask}$). Similarly, when the best ask price at a later timestamp is less than the best bid price at the current timestamp, we have a downward trends. In all other situations (i.e. $P^{ask}_{t+\Delta t} > P^{bid}_t$ and $P^{bid}_{t+\Delta t} < P^{ask}_t$), we have a stationary trend. In this project, we use both ways to create label classes and train models. \\
+Now, we pre-process our raw data into suitable and meaningful predictors. All the features and their corresponding descriptions are shown in Table 1, divided into three categories: basic, time-insensitive and time-sensitive. First, we extract the ask and bid price, as well as the ask and bid volume (collectively defined as $v_1$) for each of the 10 levels from the raw dataset to form our basic feature set. \\
+Our time insensitive set includes features $v_2, v_3, v_4, v_5$. These features are bid-ask spreads and mid-prices ($v_2$), price difference ($v_3$), mean prices and volumes ($v_4$) and accumulated differences ($v_5$) respectively. We wrote functions to calculate each feature. \\
+In the time-sensitive set, we have features $v_6, v_7, v_8, v_9$. $v_6$ is the average time derivative of price and volume, computed over a specified $\Delta t$. Again, we wrote a function, taking $\Delta t$ as an input to calculate the price and volume derivatives. $v_7, v_8, v_9$ focuses on the intensity and acceleration of the different trading types (limit, market and cancellation). $v_7$ is the average intensity of each type; $v_8$ is the relative intensity indicators; $v_9$ is the accelerations of market and limit order bids and asks. Features $v_7, v_8, v_9$ require the use of the message book dataset and is computationally exhaustive. Therefore, we left them out and only used features $v_1 - v_6$ when training our models.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}[2pt]{|l|l|}
+\hline
+Basic Set & Description($i$ = LOB level)\\
+\hline
+$v_1 = \{P_i^{ask}, V_i^{ask}, P_i^{bid}, V_i^{bid}\} $ & price and volume (10 levels) \\
+\hline
+\multicolumn{2}{c} {} \\
+\hline
+Time-insensitive Set & Description($i$ = LOB level)\\
+\hline
+$v_2 = \{P_i^{ask}-P_i^{bid}, (P_i^{ask}+P_i^{bid})/2\} $ & bid-ask spreads and mid-prices \\
+$v_3 = \{P_{10}^{ask}-P_1^{ask}, P_{1}^{bid}-P_{10}^{bid}, |P_{i+1}^{ask}-P_i^{ask}|, |P_{i+1}^{bid}-P_{i}^{bid}\} $ & price differences (10 levels) \\
+$v_4 = \{\frac{1}{n}\sum_{i=1}^{n}P_i^{ask}, \frac{1}{n}\sum_{i=1}^{n}P_i^{bid}, \frac{1}{n}\sum_{i=1}^{n}V_i^{ask}, \frac{1}{n}\sum_{i=1}^{n}V_i^{bid}\} $ & mean prices and volumes \\
+$v_5 = \{\sum_{i=1}^{n}(P_i^{ask}-P_i^{bid}), \sum_{i=1}^{n}(V_i^{ask}-V_i^{bid})\} $ & accumulated differences \\
+\hline
+\multicolumn{2}{c} {} \\
+\hline
+Time-sensitive Set & Description($i$ = LOB level)\\
+\hline
+$v_6 = \{dP_i^{ask}, dV_i^{ask}, dP_i^{bid}, dV_i^{bid}\} $ & price and volume derivatives \\
+$v_7 = \{\lambda_{\Delta t}^{la}, \lambda_{\Delta t}^{lb}, \lambda_{\Delta t}^{ma}, \lambda_{\Delta t}^{mb}, \lambda_{\Delta t}^{ca}, \lambda_{\Delta t}^{cb}\} $ & average intensity of each type \\
+$v_8 = \{\textbf{1}_{\{\lambda_{\Delta t}^{la}>\lambda_{\Delta T}^{la}\}}, \textbf{1}_{\{\lambda_{\Delta t}^{lb}>\lambda_{\Delta T}^{lb}\}}, \textbf{1}_{\{\lambda_{\Delta t}^{ma}>\lambda_{\Delta T}^{ma}\}}, \textbf{1}_{\{\lambda_{\Delta t}^{mb}>\lambda_{\Delta T}^{mb}\}}\} $ & relative intensity indicators \\
+$v_9 = \{d\lambda^{ma}, d\lambda^{lb}, d\lambda^{mb}, d\lambda^{la}\} $ & accelerations (market/limit) \\
+\hline
+\end{tabular}
+
+\vspace{0.5 cm}
+\small \textbf{Table 1}: Feature vector set (basic, time-insensitive and time-sensitive set) for 10 levels of LOB
+\end{center}
+\normalsize
+
+
+\section{Model Fitting}
+
+
+\section{Model Assessment}
+
+
+\section{Interpretations}
+
+\section{Implementation of Trading Strategies}
+\section{Discussion}
+
+
+\section{Conclusion}
+
+% the `Acknowledgments` section is required if you discussed the project
+% with anyone else.
+
+\bibliographystyle{plain}
+\bibliography{finance}
+
+\end{document}

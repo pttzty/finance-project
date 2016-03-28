@@ -8,4 +8,8 @@ all:
 
 
 clean:
-	rm *.{aux,log,out,blg,bbl}
+	rm *.aux
+	rm *.log
+	rm *.out
+	rm *.blg
+	rm *.bbl

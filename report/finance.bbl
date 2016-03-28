@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{imbalance}
+NV~Chawla.
+\newblock Data mining for imbalanced datasets: An overview.
+\newblock {\em Data mining and knowledge discovery handbook}, 2005.
+\newblock
+  \url{http://link.springer.com/chapter/10.1007%2F0-387-25465-X_40#page-1}.
+
+\bibitem{financesvm}
+Kercheval~Alec N and Yuan Zhang.
+\newblock Modelling high-frequency limit order book dynamics with support
+  vector machines.
+\newblock {\em Quantitative Finance 15.8}, 2014.
+\newblock \url{http://www.math.fsu.edu/~aluffi/archive/paper462.pdf}.
+
+\end{thebibliography}

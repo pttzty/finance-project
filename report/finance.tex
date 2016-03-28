@@ -39,7 +39,7 @@
 
 \author{
   Siyao Chang, Mengfei Jiang, Tianyi Zhang\\
-  \texttt{your github account}
+  \texttt{changsiyao, MengfeiJiang, pttzty}
 }
 
 
@@ -214,7 +214,7 @@ D & 37.1370\% & 56.5884\% & 44.8442\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 1}: SVM for Mid-Price Model
+\small \textbf{Table 2}: SVM for Mid-Price Model
 \end{center}
 
 \begin{center}
@@ -234,7 +234,7 @@ D & 2964 & 2304 & 6867 \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 2}: Confusion Matrix for Mid-price SVM
+\small \textbf{Table 3}: Confusion Matrix for Mid-price SVM
 \end{center}
 
 \end{multicols}
@@ -255,7 +255,7 @@ D & 91.9907\% & 88.3040\% & 90.1097\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 3}: Random Forest for Mid-Price Model
+\small \textbf{Table 4}: Random Forest for Mid-Price Model
 \end{center}
 
 \begin{center}
@@ -275,7 +275,7 @@ D & 737 & 1516 & 17010 \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 4}: Confusion Matrix for Mid-price RF
+\small \textbf{Table 5}: Confusion Matrix for Mid-price RF
 \end{center}
 
 \end{multicols}
@@ -298,7 +298,7 @@ D & 51.2761\% & 57.5521\% & 54.2331\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 5}: SVM for Spread-cross Model
+\small \textbf{Table 6}: SVM for Spread-cross Model
 \end{center}
 
 \begin{center}
@@ -318,7 +318,7 @@ D & 0 & 163 & 221 \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 6}: Confusion Matrix Spread-Cross SVM
+\small \textbf{Table 7}: Confusion Matrix Spread-Cross SVM
 \end{center}
 
 \end{multicols}
@@ -342,7 +342,7 @@ D & 67.5174\% & 79.7260\% & 73.1156\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 7}: Random Forest for Spread-cross Model
+\small \textbf{Table 8}: Random Forest for Spread-cross Model
 \end{center}
 
 \begin{center}
@@ -362,12 +362,12 @@ D & 0 & 74 & 291 \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 8}: Confusion Matrix for Spread-Cross RF
+\small \textbf{Table 9}: Confusion Matrix for Spread-Cross RF
 \end{center}
 \end{multicols}
 
 \subsection{Economized Set of Feature Space}
-We also fitted two random forests models using the economized feature space with each having 20 features compared to 126 features in the entire feature space. Compare \textbf{Table 9} to \textbf{Table 3}, for the mid-price model, economized model's measures were off within 3 percent than the full model. Compare \textbf{Table 10} to \textbf{Table 7}, for the Spread-Cross model, economized model performed almost the same as the full model. We then concluded that a smaller economized set was more desirable for training in classifying the price movements and crosses.
+We also fitted two random forests models using the economized feature space with each having 20 features compared to 126 features in the entire feature space. Compare \textbf{Table 10} to \textbf{Table 4}, for the mid-price model, economized model's measures were off within 3 percent than the full model. Compare \textbf{Table 11} to \textbf{Table 8}, for the Spread-Cross model, economized model performed almost the same as the full model. We then concluded that a smaller economized set was more desirable for training in classifying the price movements and crosses.
 \begin{multicols}{2}
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
@@ -383,7 +383,7 @@ D & 89.6490\% & 84.8493\% & 87.1831\% \\
 \end{tabular}
 }
 %\vspace{0.5 cm}
-\small \textbf{Table 9}: Random Forest (Mid-price) with economized feature set
+\small \textbf{Table 10}: Random Forest (Mid-price) with economized feature set
 \end{center}
 
 \begin{center}
@@ -400,12 +400,12 @@ D & 69.1415\% & 77.8086\% & 73.2187\% \\
 \end{tabular}
 }
 %\vspace{0.5 cm}
-\small \textbf{Table 10}: Random Forest (Spread-Cross) with economized feature set
+\small \textbf{Table 11}: Random Forest (Spread-Cross) with economized feature set
 \end{center}
 \end{multicols}
 
 \section{Interpretations}
-Regularized logit model without kernel trick was trained for both mid-price based labels and spread-crossing based labels. For the same reason as aforementioned, the training set for the spread-crossing based model comprised of 10\% U, 10\% D and 80\% S by resampling from the set1 due to highly imbalanced data set, whereas the training set for the mid-price based model was the entire set1. Also, the features used were the economized feature set extracted from the Random Forest. The accuracy rates of the two models on the test set are summarized by \textbf{Table 11} and \textbf{Table 12} below. Overall, the logit model did not perform as well as SVM or Random Forest did on the test set. It might be attributed to the fact that the classes were not linearly separable in the original feature space, which is a strong assumption of the logit model.
+Regularized logit model without kernel trick was trained for both mid-price based labels and spread-crossing based labels. For the same reason as aforementioned, the training set for the spread-crossing based model comprised of 10\% U, 10\% D and 80\% S by resampling from the set1 due to highly imbalanced data set, whereas the training set for the mid-price based model was the entire set1. Also, the features used were the economized feature set extracted from the Random Forest. The accuracy rates of the two models on the test set are summarized by \textbf{Table 12} and \textbf{Table 13} below. Overall, the logit model did not perform as well as SVM or Random Forest did on the test set. It might be attributed to the fact that the classes were not linearly separable in the original feature space, which is a strong assumption of the logit model.
 \begin{multicols}{2}
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
@@ -422,7 +422,7 @@ D & 45.6060\% & 43.4377\% & 44.4954\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 11}: Logit for Mid-price Model with economized feature set
+\small \textbf{Table 12}: Logit for Mid-price Model with economized feature set
 \end{center}
 
 \begin{center}
@@ -440,10 +440,10 @@ D & 23.2019\% & 3.0294\% & 5.3591\% \\
 }
 
 \vspace{0.5 cm}
-\small \textbf{Table 12}: Logit for Spread-Cross Model with economized feature set
+\small \textbf{Table 13}: Logit for Spread-Cross Model with economized feature set
 \end{center}
 \end{multicols}
-\noindent \textbf{Table 13} and \textbf{Table 14} summarize overall top-5 features of the two logit models respectively. It seems the class probabilities are primarily determined by price-related factors. 
+\noindent \textbf{Table 14} and \textbf{Table 15} summarize overall top-5 features of the two logit models respectively. It seems the class probabilities are primarily determined by price-related factors. 
 \begin{multicols}{2}
 \begin{center}
 \renewcommand{\arraystretch}{1.4}
@@ -461,7 +461,7 @@ Ask-to-bid volume ratio & -0.007 & -0.003 & -0.010 \\
 \end{tabular}
 }
 \vspace{0.5 cm}
-\small \textbf{Table 13}: Logit Coefficients (Mid-Price)
+\small \textbf{Table 14}: Logit Coefficients (Mid-Price)
 \end{center}
 
 \begin{center}
@@ -481,7 +481,7 @@ Ask-to-bid volume ratio & 0.034 & -0.014 & -0.003 \\
 }
 
 %\vspace{0.5 cm}
-\small \textbf{Table 14}: Logit Coefficients (Spread-Cross)
+\small \textbf{Table 15}: Logit Coefficients (Spread-Cross)
 \end{center}
 \end{multicols}
 
